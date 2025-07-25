@@ -69,3 +69,10 @@ def generate_classification_report(y_test, y_pred, le):
     # Print classification report
     report = classification_report(y_test, y_pred, target_names=le.classes_)
     return report
+
+def generate_confusion_matrix(y_test, y_pred, le):
+    cm = confusion_matrix(y_test, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=le.classes_)
+    disp.plot(cmap=plt.cm.Blues)
+    plt.title("Confusion Matrix")
+    plt.show()

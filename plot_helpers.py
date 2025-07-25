@@ -65,3 +65,9 @@ def generate_density_plot(df):
     plt.title("Density Plot of Heart Rate by State")
     plt.show()
     return plt.gcf()  # Return the current figure for Streamlit compatibility
+
+def generate_pairplot(df):
+    fig, ax = plt.subplots()
+    sns.pairplot(df, vars=['HR', 'SYS', 'DIA'], hue='state', diag_kind='kde', palette='Set2')
+    plt.suptitle("Pairplot of HR, SYS, DIA by State", y=1.02)
+    plt.show()
