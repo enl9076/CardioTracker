@@ -4,10 +4,20 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.graph_objects as go
 from plot_helpers import *
-from analysis_model_helpers import *
+from ml_model_helpers import *
+from anomoly_model_helpers import *
 
-def get_data():
-    df = pd.read_csv("data/BP_Data.csv")
+def get_data(datafile = "data/BP_Data.csv"):
+    '''Load and preprocess the blood pressure and heart rate data from a CSV file.
+    Args:
+        datafile (str): Path to the CSV file containing the data.
+    Returns: 
+        pd.DataFrame: A DataFrame containing the preprocessed data with columns for date, systolic, diastolic, heart rate, and state (sitting/standing).
+    '''
+    df = pd.read_csv(datafile)
+    df['DateTime'] = df['Date'] + ' ' + df['Time'] 
+    df['DateTime'] = pd.to_datetime(df['DateTime'], dayfirst=True)
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
     # Rename columns
     df.rename(columns={
         'SYS(mmHg)': 'SYS',
@@ -44,8 +54,10 @@ def main():
     if uploaded_data is not None:
         df = get_data(uploaded_data)
     st.sidebar.write("Date Range")
-    start_date = st.sidebar.selectbox("Start Date", options=df['Date'].unique(), index=len(df['Date'].unique()) - 1)
-    end_date = st.sidebar.selectbox("End Date", options=df['Date'].unique(), index=0)
+    start_date = st.sidebar.date_input("Start Date", value=df['Date'].min(), min_value=df['Date'].min(), max_value=df['Date'].max())
+    end_date = st.sidebar.date_input("End Date", value=df['Date'].max(), min_value=df['Date'].min(), max_value=df['Date'].max())
+    #start_date = st.sidebar.selectbox("Start Date", options=df['Date'].unique(), index=len(df['Date'].unique()) - 1)
+    #end_date = st.sidebar.selectbox("End Date", options=df['Date'].unique(), index=0)
     df = df[(df['Date'] >= str(start_date)) & (df['Date'] <= str(end_date))]    
     df_grouped = df.groupby(('Date'))  
     st.sidebar.write("Plot Selection")
@@ -80,11 +92,25 @@ def main():
             st.subheader("Logistic Regression Results")
             st.write("Accuracy:", accuracy_score)
             generate_classification_report(y_test, y_pred, le)
+        elif analysis == "Random Forest":
+            y_pred, y_test, le, accuracy_score = run_random_forest_model(df)
+            st.subheader("Random Forest Results")
+            st.write("Accuracy:", accuracy_score)
+            generate_classification_report(y_test, y_pred, le)
+            p = generate_feature_importance_plot(df, y_pred, le)
+            st.pyplot(p)
+        elif analysis == "Anomoly Detection":
+            st.subheader("Anomoly Detection Results")
+            anomoly_df = run_anomaly_detection(df)
+            st.write("Anomalies Detected:")
+            st.write(anomoly_df)
+            plots = plot_anomalies(anomoly_df)
+            st.pyplot(plots)
         
         # Only display plots if they are selected in the sidebar
-        if st.session_state.get('hr_density', True):
-            p = generate_density_plot(df)
-            st.pyplot(p)
+        #if st.session_state.get('hr_density', True):
+        #    p = generate_density_plot(df)
+        #    st.pyplot(p)
             
         if st.session_state.get('pairplot', True):
             p = generate_pairplot(df)
