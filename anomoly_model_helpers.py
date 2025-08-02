@@ -27,12 +27,12 @@ def plot_anomalies(df):
     normal = df[df['anomaly'] == 1]
     anomaly = df[df['anomaly'] == -1]
 
-    plt.figure(figsize=(8, 6))
-    plt.scatter(normal['SYS'], normal['HR'], c='blue', label='Normal', alpha=0.6)
-    plt.scatter(anomaly['SYS'], anomaly['HR'], c='red', label='Anomaly', alpha=0.8, marker='x')
+    fig, ax = plt.subplots()
+    ax.scatter(normal['SYS'], normal['HR'], c='blue', label='Normal', alpha=0.6)
+    ax.scatter(anomaly['SYS'], anomaly['HR'], c='red', label='Anomaly', alpha=0.8, marker='x')
     plt.xlabel('Systolic BP (SYS)')
     plt.ylabel('Heart Rate (HR)')
     plt.title('Anomaly Detection: HR vs. SYS')
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    return fig

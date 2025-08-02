@@ -56,15 +56,13 @@ def main():
     st.sidebar.write("Date Range")
     start_date = st.sidebar.date_input("Start Date", value=df['Date'].min(), min_value=df['Date'].min(), max_value=df['Date'].max())
     end_date = st.sidebar.date_input("End Date", value=df['Date'].max(), min_value=df['Date'].min(), max_value=df['Date'].max())
-    #start_date = st.sidebar.selectbox("Start Date", options=df['Date'].unique(), index=len(df['Date'].unique()) - 1)
-    #end_date = st.sidebar.selectbox("End Date", options=df['Date'].unique(), index=0)
     df = df[(df['Date'] >= str(start_date)) & (df['Date'] <= str(end_date))]    
     df_grouped = df.groupby(('Date'))  
-    st.sidebar.write("Plot Selection")
-    plot_opts= ["BP TImeline", "HR Timeline", "HR Density", "Pairplot"]
-    for p in plot_opts:
-        st.sidebar.checkbox(p, value=True, key=p.lower().replace(" ", "_"))
-    st.sidebar.write("Select Analysis:")
+    #st.sidebar.write("Plot Selection")
+    #plot_opts= ["BP TImeline", "HR Timeline", "HR Density", "Pairplot"]
+    #for p in plot_opts:
+    #    st.sidebar.checkbox(p, value=True, key=p.lower().replace(" ", "_"))
+    st.sidebar.write("Analysis Selection")
     analysis = st.sidebar.radio("Analysis", ["SVM Model", "Logistic Regression", "Random Forest", "Anomoly Detection"], index=1)
     
     # Main info display
@@ -79,7 +77,6 @@ def main():
 
     # Display the selected analysis results
     with analysis_tab:
-        st.subheader("Analysis Results")
         st.write("Selected Analysis:", analysis)
         if analysis == "SVM Model":
             accuracy_score, y_test, y_pred, le = run_svm_model(df)
@@ -100,10 +97,11 @@ def main():
             p = generate_feature_importance_plot(df, y_pred, le)
             st.pyplot(p)
         elif analysis == "Anomoly Detection":
+            st.radio("Select Model", ["Isolation Forest", "Seasonal", "Volatility Shift", "Threshold"], index=0, key="anomoly_method")
             st.subheader("Anomoly Detection Results")
             anomoly_df = run_anomaly_detection(df)
             st.write("Anomalies Detected:")
-            st.write(anomoly_df)
+            #st.write(anomoly_df)
             plots = plot_anomalies(anomoly_df)
             st.pyplot(plots)
         
@@ -119,20 +117,18 @@ def main():
     with bp_timeline_tab:
         st.subheader("Blood Pressure Timeline")
         st.write("This section shows the blood pressure readings over time.")
-        if st.session_state.get('bp_timeline', True):
-            for date, group in df_grouped:
-                fig = generate_bp_plots(group)
-                fig.update_layout(title=f'Blood Pressure on {date}')
-                st.plotly_chart(fig) 
+        for date, group in df_grouped:
+            fig = generate_bp_plots(group)
+            fig.update_layout(title=f'Blood Pressure on {date}')
+            st.plotly_chart(fig) 
     
     with hr_timeline_tab:
         st.subheader("Heart Rate Timeline")
         st.write("This section shows the heart rate readings over time.")
-        if st.session_state.get('hr_timeline', True):
-            for date, group in df_grouped:
-                fig = generate_hr_plots(group)
-                fig.update_layout(title=f'Heart Rate on {date}')
-                st.plotly_chart(fig) 
+        for date, group in df_grouped:
+            fig = generate_hr_plots(group)
+            fig.update_layout(title=f'Heart Rate on {date}')
+            st.plotly_chart(fig) 
 
 
 
