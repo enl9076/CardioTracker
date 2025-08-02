@@ -38,6 +38,8 @@ The application expects a CSV file with at least the following columns:
 
 * `Pulse(Beats/Min)`: (Integer, BPM)
 
+If you want the timeline graphs annotated with symptoms/context during the readings, the data file you upload will also need a 'Note' column (works best if there is a single word for each entry).
+
 ## 🤝 Contributing
 Contributions are welcome! If you have suggestions for improvements, new features, or bug fixes, please follow these steps:
 
