@@ -3,9 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.graph_objects as go
+import base64
 from plot_helpers import *
 from ml_model_helpers import *
 from anomoly_model_helpers import *
+from report_generation import generate_report
 
 def get_data(datafile = "data/BP_Data.csv"):
     '''Load and preprocess the blood pressure and heart rate data from a CSV file.
@@ -64,6 +66,14 @@ def main():
     #    st.sidebar.checkbox(p, value=True, key=p.lower().replace(" ", "_"))
     st.sidebar.write("Analysis Selection")
     analysis = st.sidebar.radio("Analysis", ["SVM Model", "Logistic Regression", "Random Forest", "Anomoly Detection"], index=1)
+    #generate_report(df, get_average_by_state(df))
+    '''st.sidebar.download_button(
+        label="Download Report",
+        data=report,
+        file_name="vital_signs_report.pdf",
+        mime="application/pdf",
+        help="Download a PDF report of your vital signs analysis."
+    )'''
     
     # Main info display
     col1, col2, col3 = st.columns(3)
@@ -71,7 +81,8 @@ def main():
     col2.metric("Avg BP (DIA)", f"{df['DIA'].mean():.1f} mmHg", border=True)
     col3.metric("Avg HR", f"{df['HR'].mean():.1f} bpm", border=True)
     st.subheader("Grouped Data Summary")
-    st.write(get_average_by_state(df))
+    averages = get_average_by_state(df)
+    st.write(averages)
     
     bp_timeline_tab, hr_timeline_tab, analysis_tab = st.tabs(["BP Timeline", "HR Timeline", "Analysis"])
 
@@ -119,7 +130,7 @@ def main():
         st.write("This section shows the blood pressure readings over time.")
         for date, group in df_grouped:
             fig = generate_bp_plots(group)
-            fig.update_layout(title=f'Blood Pressure on {date}')
+            fig.update_layout(title=f'Blood Pressure on {date.strftime("%Y-%m-%d")}')
             st.plotly_chart(fig) 
     
     with hr_timeline_tab:
@@ -127,7 +138,7 @@ def main():
         st.write("This section shows the heart rate readings over time.")
         for date, group in df_grouped:
             fig = generate_hr_plots(group)
-            fig.update_layout(title=f'Heart Rate on {date}')
+            fig.update_layout(title=f'Heart Rate on {date.strftime("%Y-%m-%d")}')
             st.plotly_chart(fig) 
 
 
