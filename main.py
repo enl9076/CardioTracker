@@ -2,8 +2,9 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 import streamlit as st
+import st_paywall
+from st_paywall import add_auth
 import plotly.graph_objects as go
-import base64
 from plot_helpers import *
 from ml_model_helpers import *
 from anomoly_model_helpers import *
@@ -42,6 +43,7 @@ def get_average_by_state(df):
     return averages
 
 
+add_auth(required=True)
 
 def main():
     df = get_data()
@@ -67,13 +69,6 @@ def main():
     st.sidebar.write("Analysis Selection")
     analysis = st.sidebar.radio("Analysis", ["SVM Model", "Logistic Regression", "Random Forest", "Anomoly Detection"], index=1)
     #generate_report(df, get_average_by_state(df))
-    '''st.sidebar.download_button(
-        label="Download Report",
-        data=report,
-        file_name="vital_signs_report.pdf",
-        mime="application/pdf",
-        help="Download a PDF report of your vital signs analysis."
-    )'''
     
     # Main info display
     col1, col2, col3 = st.columns(3)

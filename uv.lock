@@ -74,6 +74,7 @@ dependencies = [
     { name = "plotly" },
     { name = "scikit-learn" },
     { name = "seaborn" },
+    { name = "st-paywall" },
     { name = "streamlit" },
 ]
 
@@ -87,6 +88,7 @@ requires-dist = [
     { name = "plotly", specifier = ">=6.2.0" },
     { name = "scikit-learn", specifier = ">=1.7.1" },
     { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "st-paywall", specifier = ">=1.0.2" },
     { name = "streamlit", specifier = ">=1.47.0" },
 ]
 
@@ -1356,6 +1358,19 @@ wheels = [
 ]
 
 [[package]]
+name = "st-paywall"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+    { name = "stripe" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f7/fd/3f47a075d909a10f455b3c9f0c18d26181ee342ae61327cf08da2d5aea87/st_paywall-1.0.2.tar.gz", hash = "sha256:8f8da0dc643afd19147291924d48a9588e44a111c1105e56db3bfecb58a8f58f", size = 5338, upload-time = "2025-06-28T19:38:24.383Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/57/62c32731867b5068be1b430543cea605a0ad3379f55d2956da9d7920771e/st_paywall-1.0.2-py3-none-any.whl", hash = "sha256:79230f25ba4804aa3a53f8aba77edca20f36a005a740486a0b8718fb60a50b98", size = 6204, upload-time = "2025-06-28T19:38:23.392Z" },
+]
+
+[[package]]
 name = "statsmodels"
 version = "0.14.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1424,6 +1439,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e9/10/46e1e71fd52d7137402f5b2abee20c57d315dd9f8a88e123f03c36ad6260/streamlit-1.47.0.tar.gz", hash = "sha256:b4ff3b8fa01de1e1dc572930b420897f0870ed2ae44e23a815999b62c0778c30", size = 9540444, upload-time = "2025-07-16T16:26:49.864Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/62/b1/44bd5f0eb1a6d9fa045db1e8bca77dc6751c12f7dacebf820ee708ea5acc/streamlit-1.47.0-py3-none-any.whl", hash = "sha256:c10dbfdf832c3fb8e5b62c7a5d1eaaae460dcf332a3a1623f7a072a6303100ee", size = 9944331, upload-time = "2025-07-16T16:26:46.801Z" },
+]
+
+[[package]]
+name = "stripe"
+version = "12.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ed/48/98caed87572968a6f4077507080b64d21763e2b6109c26e7e994a65dbcb2/stripe-12.4.0.tar.gz", hash = "sha256:1cd1f5b0579867923081bacf594959d1f403f218223a06dc38273beb07d01567", size = 1414724, upload-time = "2025-07-30T17:25:53.206Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/75/a513c6e3262e31d55b93d073629aaf6667c39ca3c00ff3d2e3cfc2d5cff1/stripe-12.4.0-py2.py3-none-any.whl", hash = "sha256:10720fcbf075a0b4e3eefb209a005c94564ac0f6166d284ff3164439f39af86c", size = 1654255, upload-time = "2025-07-30T17:25:50.864Z" },
 ]
 
 [[package]]
