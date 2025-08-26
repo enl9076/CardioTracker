@@ -2,13 +2,14 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 import streamlit as st
-import st_paywall
 from st_paywall import add_auth
 import plotly.graph_objects as go
 from plot_helpers import *
 from ml_model_helpers import *
 from anomoly_model_helpers import *
 from report_generation import generate_report
+
+
 
 def get_data(datafile = "data/BP_Data.csv"):
     '''Load and preprocess the blood pressure and heart rate data from a CSV file.
@@ -43,9 +44,13 @@ def get_average_by_state(df):
     return averages
 
 
-add_auth(required=True)
-
 def main():
+    if not st.user.is_logged_in:
+        if st.sidebar.button("Log in"):
+            st.login()
+    else:
+        add_auth(required=True, use_sidebar=True)
+    
     df = get_data()
     df_grouped = df.groupby(('Date'))
         
@@ -79,7 +84,7 @@ def main():
     averages = get_average_by_state(df)
     st.write(averages)
     
-    bp_timeline_tab, hr_timeline_tab, analysis_tab = st.tabs(["BP Timeline", "HR Timeline", "Analysis"])
+    bp_timeline_tab, hr_timeline_tab, analysis_tab, report_tab = st.tabs(["BP Timeline", "HR Timeline", "Analysis", "Report"])
 
     # Display the selected analysis results
     with analysis_tab:
@@ -136,7 +141,19 @@ def main():
             fig.update_layout(title=f'Heart Rate on {date.strftime("%Y-%m-%d")}')
             st.plotly_chart(fig) 
 
-
+    with report_tab:
+        if not st.user.is_logged_in:
+            st.warning("Please log in to generate a report.")
+        else:
+            st.subheader("Generate Report")
+            st.write("Click the button below to generate a PDF report of your vital signs data. By default this only includes the basic descriptive statistics.")
+            st.write("You can customize the report by selecting the options below.")
+            st.checkbox("Include HR Timeline Plots", value=False, key="hr_timeline_plots")
+            st.checkbox("Include BP Timeline Plots", value=False, key="bp_timeline_plots")
+            st.checkbox("Include Analysis", value=False, key="analysis")
+            if st.button("Generate Report"):
+                generate_report(df, averages)
+                st.success("Report generated successfully!")
 
 if __name__ == "__main__":
     main()
