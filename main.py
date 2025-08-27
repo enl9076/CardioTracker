@@ -10,7 +10,6 @@ from anomoly_model_helpers import *
 from report_generation import generate_report
 
 
-
 def get_data(datafile = "data/BP_Data.csv"):
     '''Load and preprocess the blood pressure and heart rate data from a CSV file.
     Args:
@@ -45,11 +44,6 @@ def get_average_by_state(df):
 
 
 def main():
-    if not st.user.is_logged_in:
-        if st.sidebar.button("Log in"):
-            st.login()
-    else:
-        add_auth(required=True, use_sidebar=True)
     
     df = get_data()
     df_grouped = df.groupby(('Date'))
@@ -143,7 +137,12 @@ def main():
 
     with report_tab:
         if not st.user.is_logged_in:
-            st.warning("Please log in to generate a report.")
+            st.warning("Please log in and subscribe to generate a report.")
+            st.write(st.user)
+            if st.button("Log In "):
+                st.login()
+        elif not st.user.is_subscribed:
+            add_auth(required=True)
         else:
             st.subheader("Generate Report")
             st.write("Click the button below to generate a PDF report of your vital signs data. By default this only includes the basic descriptive statistics.")
