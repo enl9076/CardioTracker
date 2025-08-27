@@ -136,12 +136,7 @@ def main():
             st.plotly_chart(fig) 
 
     with report_tab:
-        if not st.user.is_logged_in:
-            st.warning("Please log in and subscribe to generate a report.")
-            st.write(st.user)
-            if st.button("Log In "):
-                st.login()
-        elif not st.user.is_subscribed:
+        if not st.user.is_logged_in or not st.user.is_subscribed:
             add_auth(required=True)
         else:
             st.subheader("Generate Report")
