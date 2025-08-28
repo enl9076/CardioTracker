@@ -56,6 +56,6 @@ def generate_report(df, averages, filename=filename):
             pdf.cell(22, 8, f"{row[vital]['max']:.1f}", border=1)
             pdf.ln()
     
-    # Save the PDF
+
     return pdf.output(filename).encode("latin-1") 
 

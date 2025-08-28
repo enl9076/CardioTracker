@@ -10,6 +10,7 @@ from anomoly_model_helpers import *
 from report_generation import generate_report
 
 
+
 def get_data(datafile = "data/BP_Data.csv"):
     '''Load and preprocess the blood pressure and heart rate data from a CSV file.
     Args:
@@ -61,15 +62,10 @@ def main():
     end_date = st.sidebar.date_input("End Date", value=df['Date'].max(), min_value=df['Date'].min(), max_value=df['Date'].max())
     df = df[(df['Date'] >= str(start_date)) & (df['Date'] <= str(end_date))]    
     df_grouped = df.groupby(('Date'))  
-    #st.sidebar.write("Plot Selection")
-    #plot_opts= ["BP TImeline", "HR Timeline", "HR Density", "Pairplot"]
-    #for p in plot_opts:
-    #    st.sidebar.checkbox(p, value=True, key=p.lower().replace(" ", "_"))
     st.sidebar.write("Analysis Selection")
     analysis = st.sidebar.radio("Analysis", ["SVM Model", "Logistic Regression", "Random Forest", "Anomoly Detection"], index=1)
-    #generate_report(df, get_average_by_state(df))
     
-    # Main info display
+    #-------- Main info display ----------#
     col1, col2, col3 = st.columns(3)
     col1.metric("Avg BP (SYS)", f"{df['SYS'].mean():.1f} mmHg", border=True)
     col2.metric("Avg BP (DIA)", f"{df['DIA'].mean():.1f} mmHg", border=True)
@@ -80,45 +76,46 @@ def main():
     
     bp_timeline_tab, hr_timeline_tab, analysis_tab, report_tab = st.tabs(["BP Timeline", "HR Timeline", "Analysis", "Report"])
 
-    # Display the selected analysis results
+    #-------- Display the selected analysis results ----------#
     with analysis_tab:
         st.write("Selected Analysis:", analysis)
         if analysis == "SVM Model":
             accuracy_score, y_test, y_pred, le = run_svm_model(df)
             st.subheader("SVM Model Results")
-            st.write("Accuracy:", accuracy_score)
-            p=generate_confusion_matrix(y_test, y_pred, le)
-            st.pyplot(p)
+            st.write(f"Accuracy: {round(accuracy_score*100,2)}%")
+            st.pyplot(generate_confusion_matrix(y_test, y_pred, le))
         elif analysis == "Logistic Regression":
             y_pred, y_test, le, accuracy_score = run_logistic_regression_model(df)
             st.subheader("Logistic Regression Results")
-            st.write("Accuracy:", accuracy_score)
-            generate_classification_report(y_test, y_pred, le)
+            st.write(f"Accuracy: {round(accuracy_score*100,2)}%")
+            p=generate_confusion_matrix(y_test, y_pred, le)
+            st.pyplot(p)
+            st.pyplot(generate_pairplot(df))
         elif analysis == "Random Forest":
             y_pred, y_test, le, accuracy_score = run_random_forest_model(df)
             st.subheader("Random Forest Results")
-            st.write("Accuracy:", accuracy_score)
+            st.write(f"Accuracy: {round(accuracy_score*100,2)}%")
             generate_classification_report(y_test, y_pred, le)
             p = generate_feature_importance_plot(df, y_pred, le)
             st.pyplot(p)
         elif analysis == "Anomoly Detection":
-            st.radio("Select Model", ["Isolation Forest", "Seasonal", "Volatility Shift", "Threshold"], index=0, key="anomoly_method")
+            #st.radio("Select Model", ["Isolation Forest", "Seasonal", "Volatility Shift", "Threshold"], index=0, key="anomoly_method")
+            st.write("Additional anomoly model options coming soon!")
             st.subheader("Anomoly Detection Results")
+            #if st.session_state.anomoly_method == "Isolation Forest":
             anomoly_df = run_anomaly_detection(df)
+            #elif st.session_state.anomoly_method == "Seasonal":
+            #    try:
+            ##        anomoly_df = run_seasonal_anomaly_detection(df)
+            #    except Exception as e:
+            #        st.error("Could not find significant seasonality in the data. Please try a different method.")
+            #elif st.session_state.anomoly_method == "Volatility Shift":
+            #    anomoly_df = run_volatility_shift_detection(df)
             st.write("Anomalies Detected:")
-            #st.write(anomoly_df)
             plots = plot_anomalies(anomoly_df)
             st.pyplot(plots)
-        
-        # Only display plots if they are selected in the sidebar
-        #if st.session_state.get('hr_density', True):
-        #    p = generate_density_plot(df)
-        #    st.pyplot(p)
-            
-        if st.session_state.get('pairplot', True):
-            p = generate_pairplot(df)
-            st.pyplot(p)
-    
+
+    #-------- Display the timeline graphs ----------#
     with bp_timeline_tab:
         st.subheader("Blood Pressure Timeline")
         st.write("This section shows the blood pressure readings over time.")
@@ -135,19 +132,15 @@ def main():
             fig.update_layout(title=f'Heart Rate on {date.strftime("%Y-%m-%d")}')
             st.plotly_chart(fig) 
 
+    #-------- Generate a report ----------#
     with report_tab:
-        if not st.user.is_logged_in or not st.user.is_subscribed:
-            add_auth(required=True)
+        st.subheader("Generate Report")
+        st.write("Click the button below to generate a PDF report of your vital signs data. By default this only includes the basic descriptive statistics.")
+        if st.button("Generate Report"):
+            generate_report(df, averages)
+            st.success("Report generated successfully! It can be found in your Downloads folder")
         else:
-            st.subheader("Generate Report")
-            st.write("Click the button below to generate a PDF report of your vital signs data. By default this only includes the basic descriptive statistics.")
-            st.write("You can customize the report by selecting the options below.")
-            st.checkbox("Include HR Timeline Plots", value=False, key="hr_timeline_plots")
-            st.checkbox("Include BP Timeline Plots", value=False, key="bp_timeline_plots")
-            st.checkbox("Include Analysis", value=False, key="analysis")
-            if st.button("Generate Report"):
-                generate_report(df, averages)
-                st.success("Report generated successfully!")
+            print(f"DEBUG: Button not pressed")
 
 if __name__ == "__main__":
     main()

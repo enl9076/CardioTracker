@@ -2,7 +2,7 @@ from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
 from adtk.data import validate_series
 from adtk.visualization import plot
-from adtk.detector import ThresholdAD, InterQuartileRangeAD, VolatilityShiftAD, SeasonalAD
+from adtk.detector import InterQuartileRangeAD, VolatilityShiftAD, SeasonalAD
 
 def run_anomaly_detection(df):
     """
@@ -36,3 +36,37 @@ def plot_anomalies(df):
     plt.legend()
     plt.tight_layout()
     return fig
+
+def run_seasonal_anomaly_detection(df):
+    """
+    Runs seasonal anomaly detection on the HR time series data.
+    Returns: The dataframe with an added 'anomaly' column (True=anomaly, False=normal).
+    """
+    # Ensure the index is a datetime index
+    df = df.set_index('Date')
+    ts = validate_series(df['HR'])
+
+    # Initialize SeasonalAD detector
+    seasonal_ad = SeasonalAD()
+    anomalies = seasonal_ad.fit_detect(ts)
+
+    # Add anomaly column to dataframe
+    df['anomaly'] = anomalies
+    return df
+
+def run_volatility_shift_detection(df):
+    """
+    Runs volatility shift anomaly detection on the HR time series data.
+    Returns: The dataframe with an added 'anomaly' column (True=anomaly, False=normal).
+    """
+    # Ensure the index is a datetime index
+    df = df.set_index('Date')
+    ts = validate_series(df['HR'])
+
+    # Initialize VolatilityShiftAD detector
+    volatility_ad = VolatilityShiftAD(5, c=3.0)
+    anomalies = volatility_ad.fit_detect(ts)
+
+    # Add anomaly column to dataframe
+    df['anomaly'] = anomalies
+    return df
