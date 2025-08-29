@@ -66,7 +66,7 @@ def run_volatility_shift_detection(df):
     # Initialize VolatilityShiftAD detector
     volatility_ad = VolatilityShiftAD(5, c=3.0)
     anomalies = volatility_ad.fit_detect(ts)
-
-    # Add anomaly column to dataframe
+    #plt.style.use('seaborn-v0_8-whitegrid')
+    #plot(ts, anomaly=anomalies, anomaly_color='red')
     df['anomaly'] = anomalies
-    return df
+    return anomalies

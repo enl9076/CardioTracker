@@ -57,5 +57,5 @@ def generate_report(df, averages, filename=filename):
             pdf.ln()
     
 
-    return pdf.output(filename).encode("latin-1") 
+    return pdf.output(filename, dest="S").encode("latin-1") 
 
